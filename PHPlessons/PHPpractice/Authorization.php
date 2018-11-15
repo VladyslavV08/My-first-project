@@ -7,10 +7,24 @@
 
 $email= $_POST['email'];
 $password= $_POST['password'];
+if(!isset($_COOKIE['user_id'])){
+	if(isset($_POST['submit'])){
+		$email = mysqli_real_escape_string($link, trim($_POST['email']));
+		$password = mysqli_real_escape_string($link, trim($_POST['password']));
+		if(!empty($email) && !empty($password)){
+			$query="SELECT * FROM `users` WHERE `Email` = '$email' AND `Password` = '$password'";
 
-$query="SELECT * FROM `users` WHERE `Email` = '$email' AND `Password` = '$password'";
+			$result = mysqli_query($link , $query) or die(mysqli_error($link));
+			if (mysqli_num_rows($result) == 1) {
+				$row = mysqli_fetch_assoc($result);
+				setcookie('email', $row['email'], time() + (60*60*24*30));
+				setcookie('password', $row['password'], time() + (60*60*24*30));
+			}
+		}
+	
+	}
 
-$result = mysqli_query($link , $query) or die(mysqli_error($link));
+}
 
 	if ($row = mysqli_fetch_array($result))
 	{
